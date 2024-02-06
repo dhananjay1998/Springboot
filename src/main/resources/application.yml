@@ -3,6 +3,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/learn
     username: djay
     password: veryeasy
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: demo
   jpa:
     hibernate:
       ddl-auto: update

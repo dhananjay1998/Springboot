@@ -1,17 +1,22 @@
-package com.example.demo.entity;
+package com.example.demo.entity.sql;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
+import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="db_person")
+@Table(name="person")
 @Data
 public class Person {
 
     @jakarta.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
+
+    @Column(name = "field_name", unique = true)
+    @Size(max = 10)
     private String name;
+
+    private Long phone;
 }

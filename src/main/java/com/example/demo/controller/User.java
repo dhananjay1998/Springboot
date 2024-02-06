@@ -1,10 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UserDTO;
-import com.example.demo.entity.Person;
+import com.example.demo.entity.sql.Person;
+import com.example.demo.exception.CustomException;
+import com.example.demo.exception.ErrorResponse;
 import com.example.demo.repository.PersonRepository;
 import com.example.demo.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,14 +23,40 @@ public class User {
 
     @GetMapping("/get_user")
     public Person getUser() {
-        Person person = personRepository.findById(1L).orElse(new Person());
 
-        return  person;
+        return personRepository.findById(1L).orElse(new Person());
     }
 
     @PostMapping("create_user")
-    public void createUser(@RequestBody UserDTO userDTO) {
-        userService.createUser(userDTO);
+    public ResponseEntity<?> createUser(@RequestBody Person person, HttpServletRequest request) throws Exception , CustomException{
+        try {
+            Person personResponse = userService.createUser(person);
+            return ResponseEntity.status(HttpStatus.CREATED).body(personResponse);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(
+                    "Internal Server Errors",
+                    HttpStatus.BAD_REQUEST.value(),
+                    e.getMessage(),
+                    request.getRequestURI()
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+    }
+
+    @PatchMapping("update_user/{Id}")
+    public ResponseEntity<?> patchUser(@RequestBody Person person,@PathVariable String Id, HttpServletRequest request) throws Exception , CustomException{
+        try {
+            Person personResponse = userService.updateUser(person, Id);
+            return ResponseEntity.status(HttpStatus.CREATED).body(personResponse);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(
+                    "Internal Server Errors",
+                    HttpStatus.BAD_REQUEST.value(),
+                    e.getMessage(),
+                    request.getRequestURI()
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
     }
 
 }
